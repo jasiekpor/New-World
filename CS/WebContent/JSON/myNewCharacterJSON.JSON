@@ -1,0 +1,390 @@
+{
+	"Stats":[
+		 {"mainStatistic":{
+			  "mainStatisticName":"Coordination",
+			  "mainStatisticValue":7,
+			  "mainStatisticModifier":0,
+			  "mainStatisticProgress":0,
+			  "secondaryStatName":"Dodge",
+			  "currentMainStatSum":0,
+			  "derivativeStats":[
+					{"derivativeStatistic":{
+							    "derivativeStatisticName":"Agility",
+							    "derivativeStatisticProgress":0,
+							    "derivativeStatisticModifier":0,
+							    "derivativeStatisticValue":2,
+							    "currentDerivativeStatSum":0,
+							}
+					},
+					{"derivativeStatistic":{
+							    "derivativeStatisticName":"Dexterity",
+							    "derivativeStatisticProgress":0,
+							    "derivativeStatisticModifier":0,
+							    "derivativeStatisticValue":3,
+							    "currentDerivativeStatSum":0,
+											}
+					},
+					{"derivativeStatistic":{
+							    "derivativeStatisticName":"Perception",
+							    "derivativeStatisticProgress":0,
+							    "derivativeStatisticModifier":0,
+							    "derivativeStatisticValue":3,
+							    "currentDerivativeStatSum":0,
+											}
+					}
+					]
+				}
+			},
+		{"mainStatistic":{
+			 "mainStatisticName":"Fitness",
+			 "mainStatisticValue":7,
+			 "mainStatisticModifier":0,
+			 "mainStatisticProgress":0,
+			 "secondaryStatName":"Vitality",
+			 "currentMainStatSum":0,
+			 "derivativeStats":[
+					 {"derivativeStatistic":{
+							    "derivativeStatisticName":"Strength",
+							    "derivativeStatisticProgress":0,
+							    "derivativeStatisticModifier":0,
+							    "derivativeStatisticValue":0,
+							    "currentDerivativeStatSum":0,
+								}
+					},
+					{"derivativeStatistic":{
+							    "derivativeStatisticName":"Stamina",
+							    "derivativeStatisticProgress":0,
+							    "derivativeStatisticModifier":0,
+							    "derivativeStatisticValue":0,
+							    "currentDerivativeStatSum":0,
+								}
+					},
+					{"derivativeStatistic":{
+							    "derivativeStatisticName":"Resistance",
+							    "derivativeStatisticProgress":0,
+							    "derivativeStatisticModifier":0,
+							    "derivativeStatisticValue":0,
+							    "currentDerivativeStatSum":0,
+								}
+					}
+					]
+				}
+			},
+		{"mainStatistic":{
+			 "mainStatisticName":"Mind",
+			 "mainStatisticValue":7,
+			 "mainStatisticModifier":0,
+			 "mainStatisticProgress":0,
+			 "secondaryStatName":"Control",
+			 "currentMainStatSum":0,
+			 "derivativeStats":[
+					{"derivativeStatistic":{
+							    "derivativeStatisticName":"Intelligence",
+							    "derivativeStatisticProgress":0,
+							    "derivativeStatisticModifier":0,
+							    "derivativeStatisticValue":3,
+							    "currentDerivativeStatSum":0,
+								}
+					},
+					{"derivativeStatistic":{
+							    "derivativeStatisticName":"Willpower",
+							    "derivativeStatisticProgress":0,
+							    "derivativeStatisticModifier":0,
+							    "derivativeStatisticValue":3,
+							    "currentDerivativeStatSum":0,
+								}
+					}
+				],
+				}
+			},
+		{"mainStatistic":{
+			 "mainStatisticName":"Social",
+			 "mainStatisticValue":7,
+			 "mainStatisticModifier":0,
+			 "mainStatisticProgress":0,
+			 "secondaryStatName":"Reaction",
+			 "currentMainStatSum":0,
+			 "derivativeStats":[
+					{"derivativeStatistic":{
+							    "derivativeStatisticName":"Appearance",
+							    "derivativeStatisticProgress":0,
+							    "derivativeStatisticModifier":0,
+							    "derivativeStatisticValue":0,
+							    "currentDerivativeStatSum":0,
+								}
+					},
+					{"derivativeStatistic":{
+							    "derivativeStatisticName":"Charisma",
+							    "derivativeStatisticProgress":0,
+							    "derivativeStatisticModifier":0,
+							    "derivativeStatisticValue":0,
+							    "currentDerivativeStatSum":0,
+								}
+					},
+					]
+					}
+		}
+],
+
+"Vitality":{"BodyParts":[
+        {"BodyPart":{
+        	"bodyPartName":"Head",
+            "maxPoints":0,
+            "currentPoints":0,
+            "bodyPartMultiplier":0.75,
+            "armor":0,
+            "modifier":0,
+            "percentage":1
+        }
+    },
+        {"BodyPart":{
+        	"bodyPartName":"LeftHand",
+            "maxPoints":0,
+            "currentPoints":0,
+            "bodyPartMultiplier":1,
+            "armor":0,
+            "modifier":0,
+            "percentage":1
+        }
+    },
+        {"BodyPart":{
+        	"bodyPartName":"RightHand",
+            "maxPoints":0,
+            "currentPoints":0,
+            "bodyPartMultiplier":1,
+            "armor":0,
+            "modifier":0,
+            "percentage":1
+        }
+    },
+        {"BodyPart":{
+        	"bodyPartName":"Corpse",
+            "maxPoints":0,
+            "currentPoints":0,
+            "bodyPartMultiplier":1.5,
+            "armor":0,
+            "modifier":0,
+            "percentage":1
+        }
+    },
+        {"BodyPart":{
+        	"bodyPartName":"LeftLeg",
+            "maxPoints":0,
+            "currentPoints":0,
+            "bodyPartMultiplier":1.1,
+            "armor":0,
+            "modifier":0,
+            "percentage":1
+        }
+    },
+        {"BodyPart":{
+        	"bodyPartName":"RightLeg",
+            "maxPoints":0,
+            "currentPoints":0,
+            "bodyPartMultiplier":1.1,
+            "armor":0,
+            "modifier":0,
+            "percentage":1
+        }
+    }
+    ]},
+
+    "CharacterSkills":[
+                {"Skill":{
+                        "SkillName":"Melee Combat",
+                        "PerksAssociatedWithSkill":0,
+                        "TestValue":0,
+                        "StatsTested":[
+                                {
+                                "TestedStat":{
+                                    "TestedStatName": "Agility",
+                                    "TestedStatMultiplier":0.5
+                                        }
+                            },
+                            {
+                                "TestedStat":{
+                                    "TestedStatName": "Strength",
+                                    "TestedStatMultiplier":0.5
+                                            }
+                            }
+                        ],
+
+                    }
+                },
+                {"Skill":{
+                        "SkillName":"Shooting",
+                        "PerksAssociatedWithSkill":0,
+                        "TestValue":0,
+                        "StatsTested":[
+                                {
+                                "TestedStat":{
+                                    "TestedStatName": "Dexterity",
+                                    "TestedStatMultiplier":0.5
+                                        }
+                            },
+                            {
+                                "TestedStat":{
+                                    "TestedStatName": "Perception",
+                                    "TestedStatMultiplier":0.5
+                                            }
+                            }
+                        ],
+
+                    }
+                },
+                {"Skill":{
+                        "SkillName":"Spell Casting",
+                        "PerksAssociatedWithSkill":0,
+                        "TestValue":0,
+                        "StatsTested":[
+                                {
+                                "TestedStat":{
+                                    "TestedStatName": "Willpower",
+                                    "TestedStatMultiplier":0.5
+                                        }
+                            },
+                            {
+                                "TestedStat":{
+                                    "TestedStatName": "Intelligence",
+                                    "TestedStatMultiplier":0.5
+                                            }
+                            }
+                        ],
+
+                    }
+                },
+                {"Skill":{
+                        "SkillName":"Swimming",
+                        "PerksAssociatedWithSkill":0,
+                        "TestValue":0,
+                        "StatsTested":[
+                                {
+                                "TestedStat":{
+                                    "TestedStatName": "Stamina",
+                                    "TestedStatMultiplier":0.5
+                                        }
+                            },
+                            {
+                                "TestedStat":{
+                                    "TestedStatName": "Agility",
+                                    "TestedStatMultiplier":0.5
+                                            }
+                            }
+                        ],
+
+                    }
+                },
+                {"Skill":{
+                        "SkillName":"Climbing",
+                        "PerksAssociatedWithSkill":0,
+                        "TestValue":0,
+                        "StatsTested":[
+                                {
+                                "TestedStat":{
+                                    "TestedStatName": "Stamina",
+                                    "TestedStatMultiplier":0.5
+                                        }
+                            },
+                            {
+                                "TestedStat":{
+                                    "TestedStatName": "Strength",
+                                    "TestedStatMultiplier":0.5
+                                            }
+                            }
+                        ],
+
+                    }
+                },
+                {"Skill":{
+                        "SkillName":"Reading",
+                        "PerksAssociatedWithSkill":0,
+                        "TestValue":0,
+                        "StatsTested":[
+                                {
+                                "TestedStat":{
+                                    "TestedStatName": "Intelligence",
+                                    "TestedStatMultiplier":1
+                                        }
+                            },
+                        ],
+
+                    }
+                },
+                {"Skill":{
+                        "SkillName":"Alchemy",
+                        "PerksAssociatedWithSkill":0,
+                        "TestValue":0,
+                        "StatsTested":[
+                                {
+                                "TestedStat":{
+                                    "TestedStatName": "Intelligence",
+                                    "TestedStatMultiplier":0.5
+                                        }
+                            },
+                            {
+                                "TestedStat":{
+                                    "TestedStatName": "Perception",
+                                    "TestedStatMultiplier":0.5
+                                            }
+                            }
+                        ],
+
+                    }
+                },
+                {"Skill":{
+                        "SkillName":"Observation",
+                        "PerksAssociatedWithSkill":0,
+                        "TestValue":0,
+                        "StatsTested":[
+                                {
+                                "TestedStat":{
+                                    "TestedStatName": "Intelligence",
+                                    "TestedStatMultiplier":0.5
+                                        }
+                            },
+                            {
+                                "TestedStat":{
+                                    "TestedStatName": "Perception",
+                                    "TestedStatMultiplier":0.5
+                                            }
+                            }
+                        ],
+
+                    }
+                },
+                {"Skill":{
+                        "SkillName":"Gossiping",
+                        "PerksAssociatedWithSkill":0,
+                        "TestValue":0,
+                        "StatsTested":[
+                                {
+                                "TestedStat":{
+                                    "TestedStatName": "Appearance",
+                                    "TestedStatMultiplier":0.5
+                                        }
+                            },
+                            {
+                                "TestedStat":{
+                                    "TestedStatName": "Charisma",
+                                    "TestedStatMultiplier":0.5
+                                            }
+                            }
+                        ],
+
+                    }
+                },
+                ],
+
+
+                "Perks":[
+                    {"Perk":
+                        {
+                            "PerkName":"Third Piggy",
+                            "AssociatedSkill":"Melee Combat",
+                            "TestAddition":0.1,
+                            "Description":""
+                        }
+                    },
+                ]
+
+}

@@ -1,0 +1,47 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <title>NewWorld</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/NewWorld.css">
+  <script src="/js/lib/FileSaver.js"></script>
+
+
+  <script src="/js/lib/general.js"></script>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="/js/lib/angular.min.js"></script>
+  <script src="/js/lib/bootstrap.min.js"></script>
+  <script src="/js/lib/Blob.js"></script>
+  <script src="/js/manual/manual.js"></script>
+
+
+  <link rel="stylesheet" href="/css/NewWorld.css">
+</head>
+<body ng-app="SchemeApp" ng-controller="SchemeController">
+
+<div ng-include src="'/html/nav/nav_top.html'"></div>
+
+
+<div class="container-fluid container-fluid-110">  
+<div class="row">
+  <div class="col-sm-2 TOC-col">
+    <div ng-include src="'/html/nav/TableOfContents.html'"></div>
+  </div>
+  <div class="col-sm-10">
+      <div class="reader"  name="chapterdiv">
+        <h1>NAGŁÓWEK</h1>
+        <p>TU WKLEJAJCIE TEKST</p>
+      </div> 
+    </div>
+</div> 
+
+
+    
+</div>
+</body>
+</html>

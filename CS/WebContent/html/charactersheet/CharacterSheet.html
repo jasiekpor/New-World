@@ -1,0 +1,915 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+
+  <title>NewWorld - Character Sheet</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/rpg-awesome.min.css">
+  <link rel="stylesheet" href="/css/NewWorld.css">
+  <script src="/js/lib/FileSaver.js"></script>
+
+
+  <script src="/js/lib/general.js"></script>
+  <script src="/js/lib/angular.min.js"></script>
+  <script src="/js/lib/Blob.js"></script>
+  <script src="/js/lib/Common.js"></script>
+  <script src="/js/lib/ui-bootstrap-tpls-2.4.0.js"></script>
+  <script src="/js/lib/sticky.js"></script>
+  <script src="/js/character/characterSheet.js"></script>
+  <script src="/js/character/chart.js"></script>
+  <script src="/js/character/CharacterSheetHtmlModificationModule.js"></script>
+  <script src='https://rawgit.com/ghostbar/angular-file-model/master/angular-file-model.js'></script>
+  
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
+
+</head>
+<body ng-app="CharacterSheetApp" ng-controller="CharacterSheetController" ng-cloak>
+
+  <div ng-include src="'/html/nav/nav_top.html'"></div>
+
+  <div class="container-fluid container-fluid-110">  
+
+
+    <div class="row">
+
+      <button ng-click="DownloadJSON()"class= "stats-button">Download Character</button>
+        <label class="custom-upload">
+
+          <input  type="file" onchange="angular.element(this).scope().fileChanged()" id="fileInput" />
+           Browse 
+        </label>
+        
+                
+        <button ng-click="loadCharacter()" class="stats-button">Load Character</button>
+        <label for="incombat">In Combat</label>
+        <input type="checkbox" ng-model="inCombat" id="incombat"/>
+        <button ng-click="NewTurn()" class="stats-button">New Turn</button>
+            <div class="row">
+              <div class="col-sm-6">
+                <p>{{CharacterName}}</p>
+                <p>Experience used: {{TotalUsedExperience}}</p>
+                <p>Experience to spend: {{toSpendCharacterExperience}}</p>
+              </div>
+            </div>
+        <div class="row info-row" sticky offset="51">
+
+          <div class="col-sm-12">
+            <div class="row">
+              <div class="col-sm-12">
+                <button class="pull-right stats-button" ng-click="UpperBarVis=!UpperBarVis" ng-hide="UpperBarVis">Show</button>
+                <button class="pull-right stats-button" ng-click="UpperBarVis=!UpperBarVis" ng-show="UpperBarVis">Hide</button>                
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-9 slide-toggle" ng-show="UpperBarVis">
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="row">
+                    <div ng-repeat="i in Stats" class="stat-summary">
+                      <div ng-repeat="k in i.mainStatistic.derivativeStats" class="col-sm-4 ">
+                        {{k.derivativeStatistic.derivativeStatisticName}}: {{currentSumStatisticTable[k.derivativeStatistic.derivativeStatisticName]}}
+                      </div>
+                    </br>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-sm-3 ">
+                  <div ng-repeat="i in Stats">
+                    {{i.mainStatistic.secondaryStatName}}: {{SecondaryStats[i.mainStatistic.secondaryStatName]}}
+                  </div>
+                </div>
+                <div class="col-sm-3 ">
+                  <p>Anima Regeneration: {{Magic.AnimaRegeneration}}</p>
+                  <button class="stats-button" ng-click="AnimaReplenishFull()">Replenish Full</button>
+                  <button class="stats-button" ng-click="AnimaReplenish()">Replenish Turn</button>
+                 </div>
+              </div>
+            </div>
+ <div class="col-sm-1 centerlize slide-toggle" ng-show="UpperBarVis">
+              <p>Health</p>
+              <canvas-graph current-value={{Vitality.VitalityCurrentPoints}} max-value={{Vitality.VitalityMaxPoints*healthMultiplier}} g-size="40" xy-size="81" id-index="$index"
+              inner-color="rgba(38, 7, 7, 0.5)" outer-color="rgba(138, 7, 7, 0.8)" block-color="rgba(117, 42, 42, 1)">
+              </canvas-graph>
+              <input type="range" min="0" max={{Vitality.VitalityMaxPoints*healthMultiplier}} numericbinding ng-model="Vitality.VitalityCurrentPoints" ng-change="healthChange()"></input>
+            </div> 
+
+             <div class="col-sm-1 centerlize slide-toggle" ng-show="UpperBarVis">
+                <p>Anima</p>  
+                <canvas-graph current-value={{Magic.CurrentAnima}} max-value={{Magic.MaxAnima}} g-size="40" xy-size="81" id-index="$index"
+                inner-color="rgba(30, 30, 80, 0.5)" outer-color="rgba(31, 64, 117, 0.8)" block-color="rgba(63, 95, 163, 1)">
+                </canvas-graph>
+                <input type="range" min="0" max={{Magic.MaxAnima}} numericbinding ng-model="Magic.CurrentAnima" ng-change="AnimaChange()"></input>
+            </div>  
+
+             <div class="col-sm-1 centerlize slide-toggle" ng-show="UpperBarVis">
+                <p>Fatigue</p>  
+                <canvas-graph current-value={{Fatigue.CurrentStamina}} max-value={{Fatigue.MaxStamina}} g-size="40" xy-size="81" id-index="$index"
+                inner-color="rgba(60,60,5, 0.5)" outer-color="rgba(100, 70, 11, 0.8)" block-color="rgba(244, 221, 46, 1)">
+                </canvas-graph>
+                <input type="range" min="0" max={{Fatigue.MaxStamina}} numericbinding ng-model="Fatigue.CurrentStamina"></input>
+            </div>  
+          </div>
+        </div>
+
+      <div class="col-sm-12">
+        
+
+           
+             
+          <ul class="nav nav-pills Test-pills centerlize">
+            <li><a href="" ng-click="Hider('Statistics')" class="pills-border">
+              <span class="ra ra-player-lift ra-2x"></span>
+               Statistics 
+              <span class="ra ra-player-lift ra-2x"></span></a></li>
+          </ul>
+          <div uib-collapse="!tabShow['Statistics']">
+
+
+              <div class="reader row"  name="chapterdiv" >
+                <div class="col-sm-2"> 
+                  <label>Experience used: {{TotalUsedExperience}}</label>
+                </div>
+                
+                <div class="col-sm-2" ng-show="edit"> 
+                  <label  class="pull-right">Experience to spend: {{toSpendCharacterExperience}}</label>
+                </div>
+                <div class="col-sm-6 " ng-show="edit"> 
+                  <input  numericbinding type="number" ng-model="updateExp" class="numeric-input pull-left" ng-show="edit" my-enter="updateExperience()" focus-on-show></input>
+                  <button ng-click="updateExperience()" class="stats-button">Add experience</button>
+                </div>
+              </div>
+            <div class="reader row"  name="chapterdiv">
+               <div class="col-sm-2 slide-toggle" ng-hide="edit||!editModifiers&&VitalityModifierTable['Total']==0"> 
+	                <label >Modifiers: {{GlobalModifiers}}</label> 
+	                <p>Wound Modifiers {{VitalityModifierTable['Total']}}</p> 
+	            </div>           
+                <div class="col-sm-2 slide-toggle" ng-hide="edit||!editModifiers" > 
+                	<input type="range" min="-30" max="30" step="1" numericbinding ng-model="GlobalModifiers" ng-change="GlobalModifierChange()"></input>
+                </div>
+                <div class="col-sm-8"> 
+                	
+                </div>
+              </div>
+
+            
+            <div class="reader row slide-toggle"  name="chapterdiv" ng-hide="edit">
+              <div class="col-sm-2"> 
+                <button class="stats-button" ng-click="editModifiers=!editModifiers" ng-hide="editModifiers">Show Modifiers</button>
+                <button class="stats-button" ng-click="editModifiers=!editModifiers" ng-show="editModifiers">Hide Modifiers</button>
+              </div>
+              
+              <div class="col-sm-10"> 
+                 
+              </div>
+            </div>
+              <div class="reader row"  name="chapterdiv" >
+
+           
+
+                <div class="col-sm-3 stat-display {{i.mainStatistic.mainStatisticName}}-background slide-toggle" ng-repeat="i in Stats"> 
+                  <div class="black-opacity">
+                    <label>{{i.mainStatistic.mainStatisticName}}</label>
+                    <div class="slide-toggle" ng-show="edit">
+                    <label >Experience: {{ExperienceTable[i.mainStatistic.mainStatisticName]}}</label>
+                    </div>
+                    <p>{{i.mainStatistic.secondaryStatName}}:{{SecondaryStats[i.mainStatistic.secondaryStatName]}}</p>
+                    <div ng-hide="edit||!editModifiers" class="slide-toggle">
+                        <p>Modifier: {{i.mainStatistic.mainStatisticModifier}}
+                        <input type="range" min="-30" max="30" step="1" numericbinding value="0" ng-model="i.mainStatistic.mainStatisticModifier"  class="main-range"
+                        ng-change="MainModifierChange(i.mainStatistic)"></input>
+                    </div>
+                    <p>Value: {{i.mainStatistic.mainStatisticValue}}</p>
+                     <div ng-show="edit" class="slide-toggle">
+                        <input type="range" min="0" max={{i.mainStatistic.mainStatisticValue+statMaxValue[i.mainStatistic.mainStatisticName]}} step="1" ng-model="i.mainStatistic.mainStatisticValue" class="main-range" ng-change="MainStatChange(i.mainStatistic)"  numericbinding></input> 
+
+                        <p >Can buy: {{statMaxValue[i.mainStatistic.mainStatisticName]}}</p>   
+                        <p >Next point cost: {{(i.mainStatistic.mainStatisticValue+1)*80}}</p>
+                        <p >Bonus: {{bonusTable[i.mainStatistic.mainStatisticName]}}</p>
+                    </div>
+                    <p>Sum: {{currentSumStatisticTable[i.mainStatistic.mainStatisticName]}}</p>
+                   
+                  
+
+                  <div class="row">
+                    <div ng-repeat="k in i.mainStatistic.derivativeStats" class="col-sm-4">
+                      <label>{{k.derivativeStatistic.derivativeStatisticName}}</label>
+                        <div ng-show="edit" class="slide-toggle">
+                          <label  ng-show="edit">Experience: {{ExperienceTable[k.derivativeStatistic.derivativeStatisticName]}}</label>
+                        </div>
+                        <div ng-hide="edit||!editModifiers" class="slide-toggle">currentSumStatisticTable[k.derivativeStatistic.derivativeStatisticName]
+                          <p>Modifier: {{k.derivativeStatistic.derivativeStatisticModifier}}
+                          <input type="range" min="-30" max="30" step="1" numericbinding value="0" ng-model="k.derivativeStatistic.derivativeStatisticModifier"
+                           ng-change="derivativeModifierChange(i.mainStatistic,k.derivativeStatistic)"></input>
+                        </div>
+
+
+                      <p>Value: {{k.derivativeStatistic.derivativeStatisticValue}} </p>
+                      
+                     <div ng-show="edit&&i.mainStatistic.mainStatisticValue>2" class="slide-toggle">
+                          <input type="range" min="0" max={{k.derivativeStatistic.derivativeStatisticValue+statMaxValue[k.derivativeStatistic.derivativeStatisticName]}} numericbinding ng-model="k.derivativeStatistic.derivativeStatisticValue" ng-change="DerivativeStatChange(i.mainStatistic,k.derivativeStatistic)"></input>
+                          <p>Can buy: {{statMaxValue[k.derivativeStatistic.derivativeStatisticName]}}</p>
+                          <p>Next point cost: {{(k.derivativeStatistic.derivativeStatisticValue+1)*40}}</p>
+                    </div>
+                      <p> Sum: 
+                        {{currentSumStatisticTable[k.derivativeStatistic.derivativeStatisticName]}}</p>
+                      
+                    </div>
+                  </div>
+                </div>
+                </div>
+                </div>
+               
+
+              <div class="reader row"  name="chapterdiv" >
+               <div class="col-sm-12"> 
+                <button class="stats-button" ng-click="edit=!edit" ng-hide="edit">Edit</button>
+                <button class="stats-button" ng-click="edit=!edit" ng-show="edit">Hide</button>
+              </div>
+            </div>
+
+          </div>
+
+
+
+         
+                    
+                    <ul class="nav nav-pills Test-pills centerlize" ng-show="false">
+                      <li><a href="" ng-click="Hider('FavoriteTests')">Favorite tests</a></li>
+                    </ul>
+
+                    <ul class="nav nav-pills Test-pills centerlize">
+                      <li class="pills-border"><a href="" ng-click="Hider('MeleeWeapons')"> <span class="ra ra-sword ra-lg"></span> Melee Weapons <span class="ra ra-sword ra-lg"></span></a></li>
+                    </ul>
+                  <div uib-collapse="!tabShow['MeleeWeapons']"  class="slide-toggle ">
+
+                    <div class="row">
+                       <div class="col-sm-6">
+                          <div class="row centerlize">
+                            <div class="col-sm-3 rightlize">
+                              <p>Weapon Name</p>
+                            </div>
+                            <div class="col-sm-1">
+                              <p>Tested value</p>
+                            </div>
+                            <div class="col-sm-3">
+                              <p>Impediment | Facilitation</p>
+                            </div>
+                            <div class="col-sm-1">
+                              <p></p>
+                            </div>
+                            <div class="col-sm-1">
+                              <p>Roll</p>
+                            </div>
+                            <div class="col-sm-1">
+                              <p>Succes Ammount</p>
+                            </div>
+                            <div class="col-sm-1">
+                              
+                            </div>
+                      </div>
+
+                    <div class="row centerlize">
+
+                      <div class="col-sm-12" ng-repeat="i in Equipment.MeleeWeapons track by $index">
+
+                         <div class="row">
+                            <div class="col-sm-3 rightlize">
+                              <p>{{i.MeleeWeapon.WeaponName}}:</p>
+                            </div>
+                            <div class="col-sm-1">
+                              <p>{{i.MeleeWeapon.TestValue}}</p>
+                            </div>
+                            <div class="col-sm-3">
+                              <input type="number" class="numeric-input" ng-model="testImpedimentTable[i.MeleeWeapon.WeaponName]" value="0"></input>
+                            </div>
+                            <div class="col-sm-1">
+                              <button class="stats-button" ng-click="RollDice(i.MeleeWeapon.WeaponName,i.MeleeWeapon)">Test</button>
+                            </div>
+                            <div class="col-sm-1">
+                              {{testResultTable[i.MeleeWeapon.WeaponName]}}
+                            </div>
+                            <div class="col-sm-1">
+                              {{testSuccesTable[i.MeleeWeapon.WeaponName]}}
+                            </div>
+                           
+                          </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+
+              </div>
+
+
+
+                    <ul class="nav nav-pills Test-pills centerlize">
+                      <li class="pills-border"><a href="" ng-click="Hider('RangedWeapons')"><span class="ra ra-archery-target ra-lg"></span> Ranged Weapons <span class="ra ra-archery-target ra-lg"></span></a></li>
+                    </ul>
+                    <div uib-collapse="!tabShow['RangedWeapons']" class="slide-toggle">
+                      <div class="row">
+                       <div class="col-sm-6">
+                        <div class="row centerlize">
+                            <div class="col-sm-3 rightlize">
+                              <p>Weapon Name</p>
+                            </div>
+                            <div class="col-sm-1">
+                              <p>Tested value</p>
+                            </div>
+                            <div class="col-sm-3">
+                              <p>Impediment | Facilitation</p>
+                            </div>
+                            <div class="col-sm-1">
+                              <p></p>
+                            </div>
+                            <div class="col-sm-1">
+                              <p>Roll</p>
+                            </div>
+                            <div class="col-sm-1">
+                              <p>Succes Ammount</p>
+                            </div>
+                      </div>
+
+                    <div class="row centerlize">
+
+                      <div class="col-sm-12" ng-repeat="i in Equipment.RangedWeapons track by $index">
+
+                         <div class="row">
+                            <div class="col-sm-3 rightlize">
+                              <p>{{i.RangedWeapon.WeaponName}}:</p>
+                            </div>
+                            <div class="col-sm-1">
+                              <p>{{i.RangedWeapon.TestValue}}</p>
+                            </div>
+                            <div class="col-sm-3">
+                              <input type="number" class="numeric-input" ng-model="testImpedimentTable[i.RangedWeapon.WeaponName]" value="0"></input>
+                            </div>
+                            <div class="col-sm-1">
+                              <button class="stats-button" ng-click="RollDice(i.RangedWeapon.WeaponName,i.RangedWeapon)">Test</button>
+                            </div>
+                            <div class="col-sm-1">
+                              {{testResultTable[i.RangedWeapon.WeaponName]}}
+                            </div>
+                            <div class="col-sm-1">
+                              {{testSuccesTable[i.RangedWeapon.WeaponName]}}
+                            </div>
+                           
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                  </div>
+
+
+                    <ul class="nav nav-pills Test-pills centerlize">
+                      <li class="pills-border"><a href="" ng-click="Hider('Skills')"><span class="ra ra-candle ra-lg"></span> Skills <span class="ra ra-candle ra-lg"></span></a></li>
+                    </ul>
+                  <div uib-collapse="!tabShow['Skills']">
+                    <div class="row centerlize">
+                      <div class="col-sm-12">
+                        <div class="row">
+                             <button type="button" class="stats-button pull-right" ng-click="SkillModalVis=true">Add Skill</button>
+                               <div class="col-sm-1 leftlize">
+                                <p>NR</p>
+                              </div>
+                              <div class="col-sm-3 rightlize slide-toggle">
+                                  
+                                  <div><span ng-click="ShowSkillNameSearch=!ShowSkillNameSearch" class="glyphicon glyphicon-search"></span> <span>Skill Name</span> <span class="glyphicon glyphicon-chevron-down" ng-click="SetSkillOrder('Skill. SkillName');"></span></div>                       
+                                  <input class="slide-toggle rightlize block-input" ng-show="ShowSkillNameSearch" type="text" ng-model="inputSkillNameSearch"></input>
+                              </div>
+                              <div class="col-sm-2">
+                                <p>Skill Tested value <span class="glyphicon glyphicon-chevron-down"  ng-click="SetSkillOrder('Skill.TestValue');"></span></p>
+                              </div>
+                              <div class="col-sm-2">
+                                <p>Impediment | Facilitation</p>
+                              </div>
+                              <div class="col-sm-1">
+                                <p>Rolling Bones</p>
+                              </div>
+                              <div class="col-sm-1">
+                                <p>Dice Roll</p>
+                              </div>
+                              <div class="col-sm-1">
+                                <p>Succes Ammount</p>
+                              </div>
+                              <div class="col-sm-1">
+                                
+                              </div>
+                        </div>
+
+                      <div class="row centerlize">
+
+                        <div class="col-sm-12">
+                           <div class="row" ng-repeat="i in CharacterSkills|orderBy: SkillOrder|filter: inputSkillNameSearch ">
+                              <div class="col-sm-1 leftlize">
+                                <p>{{$index+1}}.</p>
+                              </div>
+                              <div class="col-sm-3 rightlize">
+                                <p>{{i.Skill.SkillName}}:</p>
+                              </div>
+                              <div class="col-sm-2">
+                                <p>{{i.Skill.TestValue}}</p>
+                              </div>
+                              <div class="col-sm-2">
+                                <input type="number" class="numeric-input" ng-model="testImpedimentTable[i.Skill.SkillName]" value="0"></input>
+                              </div>
+                              <div class="col-sm-1">
+                                <button class="stats-button" ng-click="RollDice(i.Skill.SkillName,i.Skill)">Roll</button>
+                              </div>
+                              <div class="col-sm-1">
+                                {{testResultTable[i.Skill.SkillName]}}
+                              </div>
+                              <div class="col-sm-1">
+                                {{testSuccesTable[i.Skill.SkillName]}}
+                              </div>
+                              <div class="col-sm-1">
+                                <button type="button" class="stats-button pull-right" ng-click="RemoveSkill(i)">Remove &times;</button>
+                              </div>
+                              
+                            </div> 
+                        </div>
+                </div>
+
+                      </div>
+
+                  </div>
+              </div>          
+
+                    <ul class="nav nav-pills Test-pills centerlize">
+                      <li class="pills-border"><a href="" ng-click="Hider('Perks')"><span class="ra ra-player-pyromaniac ra-lg"></span> Perks <span class="ra ra-player-pyromaniac ra-lg"></span></a></li>
+                    </ul>
+
+                  <div uib-collapse="!tabShow['Perks']" class="slide-toggle">
+                    
+                    <div class="row leftlize">
+                          <div class="col-sm-1">  
+                           Perk Name
+                          </div>
+                          <div class="col-sm-2">  
+                            Associated Skill
+                          </div>
+                          <div class="col-sm-1 rightlize">  
+                            Stat multiplier
+                          </div>
+                          <div class="col-sm-1 rightlize">  
+                            Stat multiplier
+                          </div>
+                          <div class="col-sm-4">  
+                            Description
+                          </div>
+                          <div class="col-sm-3">
+                            <button type="button" class="stats-button pull-right" ng-click="PerkModalShow()">Add Perk</button>
+                          </div>
+                        </div>
+                    <div class="row leftlize">
+                      <div class="col-sm-12" ng-repeat="(key, value) in PerksTable track by $index">           
+                        <div class="row leftlize">
+                          <div class="col-sm-1">  
+                            {{key}}
+                          </div>
+                          <div class="col-sm-2">  
+                             {{value.AssociatedSkill}}
+                          </div>
+                          <div class="col-sm-1 rightlize" ng-repeat="k in MeleeWeaponsTable[value.AssociatedSkill].StatsTested track by $index">  
+                            {{k.TestedStat.TestedStatName}}: {{k.TestedStat.TestedStatMultiplier}}
+                          </div>
+                          <div class="col-sm-1 rightlize" ng-repeat="k in SkillTable[value.AssociatedSkill].StatsTested track by $index">  
+                            {{k.TestedStat.TestedStatName}}: {{k.TestedStat.TestedStatMultiplier}}
+                          </div>
+                          <div class="col-sm-4">  
+                             {{value.Description}}
+                          </div>
+                          <div class="col-sm-3">
+                            <button class="stats-button pull-right" ng-click="removePerk(value)">Remove &times;</button>
+                          </div>
+                          
+                        </div>
+                      </div>
+                    </div>
+                    
+                  </div> 
+
+
+              
+
+                
+
+                  <!-- Modal -->
+                    <ul class="nav nav-pills Test-pills centerlize">
+                      <li class="pills-border"><a href="" ng-click="Hider('Magic')"><span class="ra ra-flame-symbol ra-lg"></span> Magic <span class="ra ra-flame-symbol ra-lg"></span></a></li>
+                    </ul>
+
+                    
+                  
+                 <div uib-collapse="!tabShow['Magic']" class="slide-toggle">    
+                    <div>
+                    <ul class="nav nav-pills Test-pills centerlize">
+                      <li><a href="" ng-click="Hider('MagicDevelopment')">Magic Development</a></li>
+                    </ul>
+
+
+                    <div ng-show="tabShow['MagicDevelopment']" class="slide-toggle">
+                      <div class="row">
+                        <div class="col-sm-12 centerlize">
+                          <p>Experience used: {{TotalUsedExperience}}</p>
+                          <p>Experience to spend: {{toSpendCharacterExperience}}</p>
+                          <button type="button" class="stats-button pull-right" ng-click="MagicSchoolModalVis=true">Add New Magic School</button>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-2 centerlize">
+                          <p>Anima</p>
+                          <canvas-graph current-value={{Magic.MaxAnima}} max-value={{Magic.MaxAnima}} g-size="40" xy-size="81" id-index="$index"
+                          inner-color="rgba(30, 30, 80, 0.5)" outer-color="rgba(31, 64, 117, 0.8)" block-color="rgba(63, 95, 163, 1)">
+                          </canvas-graph>
+                          <input class ="centerlizedRange" type="range" min="10" max={{Magic.MaxAnima+statMaxValue['MaxAnima']}} numericbinding ng-model="Magic.MaxAnima" ng-change="AnimaMaxValueChange()"></input>
+                          <p>Current Max Anima: {{Magic.MaxAnima}}</p>
+                          <p>Can Buy: {{statMaxValue['MaxAnima']}}</p>
+                          <p>Anima Regeneration: {{Magic.AnimaRegeneration}}</p>                        
+                        </div>
+                      </div>
+                    </div>
+
+                  <div ng-repeat="i in Magic.MagicSchools">
+
+                    <ul class="nav nav-pills Test-pills centerlize">
+                      <li><a href="" ng-click="Hider(i.MagicSchool.MagicSchoolName)">{{i.MagicSchool.MagicSchoolName}} School</a></li>
+                    </ul>
+                    <div  uib-collapse="!tabShow[i.MagicSchool.MagicSchoolName]" class="slide-toggle">
+
+                      <div class="row">
+
+                        <div class="col-sm-2">
+                          <p>Spell Power: {{i.MagicSchool.Power}}</p>
+                        </div>
+
+                        <div class="col-sm-2">
+                          <p>{{i.MagicSchool.MagicSchoolName}} Proficiency: {{i.MagicSchool.Proficiency.ProficiencyLevel}}</p>
+                        </div>
+
+                        <div class="col-sm-2">
+                          <p>Anima Cost reduction: {{i.MagicSchool.CostReduction}}</p>
+                        </div>
+
+                        <div class="col-sm-2">
+                          <p>Spell Range: {{i.MagicSchool.Range}}</p>
+                        </div>
+
+                         <div class="col-sm-2">
+                          <p>Spell Penetration: {{i.MagicSchool.SpellPenetration}}</p>
+                        </div>
+                        <div class="col-sm-2">
+                          <button class="stats-button pull-right" ng-click="RemoveMagicSchool(i)">Remove &times;</button>
+                          
+                        </div>
+                       
+
+                      </div>
+
+                      <div class="row">
+                        <div class="col-sm-12">
+                         <button class="stats-button pull-right" ng-click="openSpellModal(i.MagicSchool)">Add Spell</button>
+                        </div>
+                        
+                      </div>
+
+                      <div class="row">
+                        <div class="col-sm-1">
+                          <p>Spell Name</p>
+                        </div>
+
+                        <div class="col-sm-2 centerlize">
+                          <p>Spell Type</p>
+                        </div>
+
+                        <div class="col-sm-1 centerlize">
+                          <p>Anima Cost</p>
+                        </div>
+
+                        <div class="col-sm-2 centerlize">
+                          <p>Description</p>
+                        </div>
+                        <div class="col-sm-2 centerlize">
+                          <p>Impediment|Facilitations</p>
+                        </div>
+                        <div class="col-sm-1 centerlize">
+                          <p>Test</p>
+                        </div>
+                         <div class="col-sm-1 centerlize">
+                          <p>Tested Skill</p>
+                        </div>
+                         <div class="col-sm-1 centerlize">
+                          <p>Roll result</p>
+                        </div>
+                         <div class="col-sm-1 centerlize">
+                          <p>Succeses</p>
+                        </div>
+
+
+
+                      </div>
+                      <div class="row" ng-repeat="k in i.MagicSchool.Spells" ng-init="testImpedimentTable[k.Spell.SpellName]=0">
+                        <div class="col-sm-1">
+                          <p>{{k.Spell.SpellName}}</p>
+                        </div>
+
+                        <div class="col-sm-2 centerlize">
+                          {{k.Spell.Type.SpellTypeName}} | {{k.Spell.TargetType.SpellTargetTypeName}}
+                        </div>
+
+                        <div class="col-sm-1 centerlize">
+                          {{k.Spell.AnimaCost}}
+                        </div>
+
+                        <div class="col-sm-2 centerlize">
+                          {{k.Spell.Description}}
+                        </div>
+
+                        <div class="col-sm-2 centerlize">
+                          <input type="number" class="numeric-input" ng-model="testImpedimentTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]" ng-init="testImpedimentTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]=0"></input>
+                        </div>
+                        <div class="col-sm-1 centerlize">
+                          <button class="stats-button" ng-click="CastSpell(k.Spell.SpellName,SkillTable[Magic.AssociatedSkill],k.Spell.AnimaCost,$index,i.MagicSchool.MagicSchoolName)">Roll</button>
+                        </div>
+                        <div class="col-sm-1 centerlize">
+                         {{SkillTable[Magic.AssociatedSkill].TestValue}}
+                        </div>
+                        <div class="col-sm-1 centerlize">
+                          {{testResultTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]}}
+                        </div>
+                        <div class="col-sm-1 centerlize">
+                          {{testSuccesTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]}}
+                        </div>
+                        <div class="col-sm-1 centerlize">
+                          <button class="stats-button" ng-click="RemoveSpell(k,i.MagicSchool)">Remove &times;</button>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+                </div>
+
+                    <div class="last-element">
+                    </div>
+
+            </div> 
+
+
+          </div>
+       
+
+
+      </div>
+      <div class="MyForm" ng-show="PerkModalVis">
+                      <div class="modal-content custom-modal slide-toggle">
+                        <div class="modal-header">
+                          <button type="button" class="close" ng-click="PerkModalVis=false">&times;</button>
+                          <h2 class="modal-title">New Perk</h2>
+                        </div>
+                        <div class="modal-body">
+                          
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="PerkNameInput" class="pull-right">Perk Name</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="text" id="PerkNameInput" ng-model="PerkToAdd.Perk.PerkName" class="pull-left"></input>
+
+                            </div>
+                          </div>
+
+                          
+                          <div class="row slide-toggle">
+                            <div class="col-sm-6">
+                              <label for="PerkAssociatedSkillInput" class="pull-right">Associated Skill</label>
+                            </div>
+                            <div class="col-sm-6 slide-toggle">
+                               
+                              <select ng-options="i.Skill.SkillName as i.Skill.SkillName for i in CharacterSkills" ng-model="PerkToAdd.Perk.AssociatedSkill" class="select-style" required>
+                                <option value="">Select Associated Skill</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="PerkTestAdditionInput" class="pull-right">Skill Multiplier Change</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="number" min="0.1" max="1.0" step="0.1"  ng-value="0.1" id="PerkTestAdditionInput" ng-model="PerkToAdd.Perk.TestAddition" class="pull-left"></input>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="PerkDescriptionInput" class="pull-right">Description</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="text" id="PerkDescriptionInput" ng-model="PerkToAdd.Perk.Description" class="pull-left"></input>
+                            </div>
+                          </div>
+
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="stats-button pull-left" ng-click="PerkModalVis=false">Close</button>
+                          <button type="button" class="stats-button pull-right" ng-click="AddPerk()">Add</button>
+                        </div>
+                      </div>
+      </div>
+      <div class="MyForm" ng-show="SkillModalVis">
+                      <div class="modal-content custom-modal slide-toggle">
+                        <div class="modal-header">
+                          <button type="button" class="close" ng-click="SkillModalVis=false">&times;</button>
+                          <h2 class="modal-title">New Skill</h2>
+                        </div>
+                        <div class="modal-body">
+                          
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="SkillNameInput" class="pull-right">Skill Name</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="text" id="SkillNameInput" ng-model="SkillToAdd.Skill.SkillName" class="pull-left"></input>
+
+                            </div>
+                          </div>
+
+                          
+                          <div class="row slide-toggle">
+                            <div class="col-sm-6">
+                              <label for="PerkAssociatedSkillInput" class="pull-right">Tested Statistics</label>
+                            </div>
+                            <div class="row" ng-repeat="i in SkillToAdd.Skill.StatsTested">
+                              <div class="col-sm-6 pull-right slide-toggle ">                                 
+                                <select ng-options="key as value.derivativeStatisticName for (key,value) in DerivativeStatsTable" ng-model="i.TestedStat.TestedStatName" class="select-style" required>
+                                <option value="">Select Tested Statistic</option>
+                                </select>
+                                <p>{{i.TestedStat.BaseTestedStatMultiplier}} | {{AddedSkillMultiplierLimit}}</p>
+                                <input type="number" min="0.1" max={{AddedSkillMultiplierLimit+i.TestedStat.BaseTestedStatMultiplier}} step="0.1" ng-model="i.TestedStat.BaseTestedStatMultiplier" ng-change="AddedSkillMultiplierChange(i.TestedStat.BaseTestedStatMultiplier)"></input>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-sm-6 pull-right slide-toggle ">
+                                <button type="button" class="stats-button pull-left" ng-click="ExtendTestedStats()">More tested Stats</button>
+                                <button type="button" class="stats-button pull-left" ng-click="CutTestedStats()">Less tested Stats</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="PerkDescriptionInput" class="pull-right">Description</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="text" id="PerkDescriptionInput" ng-model="PerkToAdd.Perk.Description" class="pull-left"></input>
+                            </div>
+                          </div>
+
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="stats-button pull-left" ng-click="SkillModalVis=false">Close</button>
+                          <button type="submit" class="stats-button pull-right" ng-click="AddSkill()">Add</button>
+                        </div>
+                      </div>
+      </div>
+      <div class="MyForm" ng-show="MagicSchoolModalVis">
+                      <div class="modal-content custom-modal slide-toggle">
+                        <div class="modal-header">
+                          <button type="button" class="close" ng-click="SkillModalVis=false">&times;</button>
+                          <h2 class="modal-title">New Magic School</h2>
+                        </div>
+                        <div class="modal-body">
+                          
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="SkillNameInput" class="pull-right">Magic School Name</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="text" id="SkillNameInput" ng-model="MagicSchoolToAdd.MagicSchool.MagicSchoolName" class="pull-left"></input>
+
+                            </div>
+                          </div>
+
+
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="MagicSchoolDescriptionInput" class="pull-right">Description</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="text" id="MagicSchoolDescriptionInput" ng-model="MagicSchoolToAdd.MagicSchool.Description" class="pull-left"></input>
+                            </div>
+                          </div>
+
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="stats-button pull-left" ng-click="MagicSchoolModalVis=false">Close</button>
+                          <button type="submit" class="stats-button pull-right" ng-click="AddMagicSchool()">Add</button>
+                        </div>
+                      </div>
+      </div>
+      <div class="MyForm" ng-show="SpellModalVis">
+                      <div class="modal-content custom-modal slide-toggle">
+                        <div class="modal-header">
+                          <button type="button" class="close" ng-click="SkillModalVis=false">&times;</button>
+                          <h2 class="modal-title">Spell from {{SpellToAdd.School.MagicSchoolName}} School</h2>
+                        </div>
+                        <div class="modal-body">
+                          
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="SkillNameInput" class="pull-right">Spell Name</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="text" id="SkillNameInput" ng-model="SpellToAdd.Spell.SpellName" class="pull-left"></input>
+
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="SkillNameInput" class="pull-right">Spell Type</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                               <select ng-options="i.SpellType as i.SpellType.SpellTypeName for i in Magic.SpellTypeList" ng-model="SpellToAdd.Spell.Type" class="select-style" required>
+                                <option value="">Select Spell Type</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="row" ng-show="SpellToAdd.Spell.Type">
+                            <div class="col-sm-6">
+                              <label for="SkillNameInput" class="pull-right">Target Type</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <select ng-options="i as i.SpellTargetTypeName for i in SpellToAdd.Spell.Type.RequiredTargetType" ng-model="SpellToAdd.Spell.TargetType" class="select-style" ng-change="CountBaseSpellCost(SpellToAdd.Spell)" required>
+                                <option value="">Select Target Type</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="SkillNameInput" class="pull-right">Penetration</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="number" id="SkillNameInput" ng-model="SpellToAdd.Spell.Penetration" class="pull-left"></input>
+
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="SkillNameInput" class="pull-right">Base Cost</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="number" id="SkillNameInput" ng-model="SpellToAdd.Spell.BaseCost" class="pull-left"></input>
+
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="SkillNameInput" class="pull-right">Damage Power</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="number" id="SkillNameInput" ng-model="SpellToAdd.Spell.DamagePower" class="pull-left"></input>
+
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="SkillNameInput" class="pull-right">Damage Multiplier</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="number" id="SkillNameInput" ng-model="SpellToAdd.Spell.DamageMultiplier" class="pull-left"></input>
+
+                            </div>
+                          </div>
+
+
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <label for="MagicSchoolDescriptionInput" class="pull-right">Description</label>
+                            </div>
+                            <div class="col-sm-6 pull-left">
+                              <input type="text" id="MagicSchoolDescriptionInput" ng-model="SpellToAdd.Spell.Description" class="pull-left"></input>
+                            </div>
+                          </div>
+
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="stats-button pull-left" ng-click="SpellModalVis=false">Close</button>
+                          <button type="submit" class="stats-button pull-right" ng-click="AddSpell()">Add</button>
+                        </div>
+                      </div>
+      </div>
+      
+    </body>
+    </html>
