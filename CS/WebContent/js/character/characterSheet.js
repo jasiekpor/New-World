@@ -277,6 +277,8 @@ $scope.testResultTable = new Map();
 
 $scope.testSuccesTable = new Map();
 
+$scope.DamageTable = new Map();
+
 $scope.testImpedimentTable = new Map();
 //Json to maps
 $scope.StatsTable = new Map();
@@ -721,40 +723,57 @@ angular.forEach($scope.Stats,function(value,key) {
 
 
         //Tests
-        $scope.RollDice = function (passedSkillName,passedSkill,PassedSpellID){
-        if(PassedSpellID==undefined){
-            $scope.testResultTable[passedSkillName]=Math.ceil(Math.random()*10)+Math.ceil(Math.random()*10);
+        $scope.RollDice = function (){
+            return Math.ceil(Math.random()*10)+Math.ceil(Math.random()*10);
+        };
+        $scope.TestSkill = function (passedSkillName,passedSkill){
+            $scope.testResultTable[passedSkillName]= $scope.RollDice();
             $scope.testSuccesTable[passedSkillName]=passedSkill.TestValue-$scope.testResultTable[passedSkillName]+$scope.testImpedimentTable[passedSkillName];
-        }else{
-            $scope.testResultTable[PassedSpellID]=Math.ceil(Math.random()*10)+Math.ceil(Math.random()*10);
-            $scope.testSuccesTable[PassedSpellID]=passedSkill.TestValue-$scope.testResultTable[PassedSpellID]+$scope.testImpedimentTable[PassedSpellID];
-        }
             //console.log(passedSkillName+': '+$scope.testSuccesTable[passedSkillName]+' | '+passedSkill.TestValue+' | '+$scope.testResultTable[passedSkillName])
         };
-        $scope.CastSpell =  function (passedSkillName,passedSkill,AnimaCost,index,MagicSchoolName){
-            if(AnimaCost<=$scope.Magic.CurrentAnima){
+        $scope.ComputeDamage = function (DamageMultiplier,SucceseAmount){
+            if(DamageMultiplier*SucceseAmount>=0){
+                return DamageMultiplier*SucceseAmount;
+            }else
+            return 0;
+           console.log(Table);
+        };  
+        $scope.CastSpell =  function (passedSkillName,passedSkill,Spell,index,MagicSchoolName){
+            // if(AnimaCost<=$scope.Magic.CurrentAnima){
                 var SpellID=passedSkillName+index+MagicSchoolName;
                 $scope.RollDice(passedSkillName,passedSkill,SpellID);
-                if($scope.inCombat)
-                    $scope.Magic.CurrentAnima = $scope.Magic.CurrentAnima - AnimaCost;
-            };
-            $scope.AnimaChange();
+                $scope.testResultTable[SpellID]=$scope.RollDice();
+                $scope.testSuccesTable[SpellID]=passedSkill.TestValue-$scope.testResultTable[SpellID]+$scope.testImpedimentTable[SpellID] - Spell.SpellDifficulty;
+                if($scope.testSuccesTable[SpellID]<=0){
+                    $scope.Vitality.VitalityCurrentPoints-=Spell.SpellDifficulty;
+                    $scope.healthChange();
+                    if($scope.Vitality.VitalityCurrentPoints<0){
+
+                        $scope.Vitality.VitalityCurrentPoints=0;
+
+                    };
+                };
+                $scope.DamageTable[SpellID]=$scope.ComputeDamage(Spell.DamageMultiplier, $scope.testSuccesTable[SpellID]);
+;            //     if($scope.inCombat)
+            //         $scope.Magic.CurrentAnima = $scope.Magic.CurrentAnima - AnimaCost;
+            // };
+            // $scope.AnimaChange();
         };
-        $scope.AnimaReplenish= function(){
-            if($scope.Magic.CurrentAnima<=$scope.Magic.MaxAnima-$scope.Magic.AnimaRegeneration){
-            $scope.Magic.CurrentAnima += $scope.Magic.AnimaRegeneration;
-        }else{
-            $scope.Magic.CurrentAnima = $scope.Magic.MaxAnima;
-            };
-        };
-        $scope.AnimaReplenishFull= function(){
-            $scope.Magic.CurrentAnima = $scope.Magic.MaxAnima;
-        };
-        $scope.CountAnimaRegeneration= function(){
-            $scope.Magic.AnimaRegeneration=Math.floor($scope.Magic.MaxAnima/5);
-        };
+        // $scope.AnimaReplenish= function(){
+        //     if($scope.Magic.CurrentAnima<=$scope.Magic.MaxAnima-$scope.Magic.AnimaRegeneration){
+        //     $scope.Magic.CurrentAnima += $scope.Magic.AnimaRegeneration;
+        // }else{
+        //     $scope.Magic.CurrentAnima = $scope.Magic.MaxAnima;
+        //     };
+        // };
+        // $scope.AnimaReplenishFull= function(){
+        //     $scope.Magic.CurrentAnima = $scope.Magic.MaxAnima;
+        // };
+        // $scope.CountAnimaRegeneration= function(){
+        //     $scope.Magic.AnimaRegeneration=Math.floor($scope.Magic.MaxAnima/5);
+        // };
         $scope.NewTurn = function(){
-            $scope.AnimaReplenish();
+            // $scope.AnimaReplenish();
         };
         //Wywalenie pętli
         $scope.MainStatChange = function(passedMainStatistic){
@@ -806,16 +825,16 @@ angular.forEach($scope.Stats,function(value,key) {
 
 
         };
-        $scope.AnimaChange = function (){
-            $scope.AnimaPercentageCount();
-        }
-        $scope.AnimaMaxValueChange = function (){
-            $scope.CountExp('MaxAnima',$scope.Magic.MaxAnima,1);
-            $scope.countExpToSpend();  
-            $scope.countMaxStatToBuy();
-            $scope.CountAnimaRegeneration();
-            $scope.CountCurrentAnima();
-        };
+        // $scope.AnimaChange = function (){
+        //     $scope.AnimaPercentageCount();
+        // }
+        // $scope.AnimaMaxValueChange = function (){
+        //     $scope.CountExp('MaxAnima',$scope.Magic.MaxAnima,1);
+        //     $scope.countExpToSpend();  
+        //     $scope.countMaxStatToBuy();
+        //     $scope.CountAnimaRegeneration();
+        //     $scope.CountCurrentAnima();
+        // };
 
         $scope.CountExpAfterPerkAdd=function(){
             $scope.TotalUsedExperience+=$scope.PerkCost;
@@ -925,30 +944,15 @@ angular.forEach($scope.Stats,function(value,key) {
            var NewSpell={Spell:null};
             // NewSpell.Spell=null;
             NewSpell.Spell=angular.copy($scope.SpellToAdd.Spell);
-            $scope.CountSpellAnimaCost(NewSpell.Spell,$scope.SpellToAdd.School);
+            // $scope.CountSpellAnimaCost(NewSpell.Spell,$scope.SpellToAdd.School);
+            $scope.CountSpellDifficulty(NewSpell.Spell,$scope.SpellToAdd.School);
+            $scope.ComputeSpellDamage(NewSpell.Spell,$scope.SpellToAdd.School);
+
             return NewSpell;
             
             };
         $scope.MakeNewMagicSchool = function() {
-           var NewMagicSchool={
-                      MagicSchool: {
-                        MagicSchoolName: $scope.MagicSchoolToAdd.MagicSchool.MagicSchoolName,
-                          Power: $scope.MagicSchoolToAdd.MagicSchool.Power,
-                          Range: $scope.MagicSchoolToAdd.MagicSchool.Range,
-                          AoERadius: $scope.MagicSchoolToAdd.MagicSchool.AoERadius,
-                          CostReduction: $scope.MagicSchoolToAdd.MagicSchool.CostReduction,
-                          SpellPenetration: $scope.MagicSchoolToAdd.MagicSchool.SpellPenetration,
-                          SingleTargetDmgIncrease: $scope.MagicSchoolToAdd.MagicSchool.SingleTargetDmgIncrease,
-                          MultipleTargetDmgIncrease: $scope.MagicSchoolToAdd.MagicSchool.MultipleTargetDmgIncrease,
-                          SingleTargetHealingIncrease: $scope.MagicSchoolToAdd.MagicSchool.SingleTargetHealingIncrease,
-                          MultipleTargetHealingIncrease: $scope.MagicSchoolToAdd.MagicSchool.MultipleTargetHealingIncrease,
-                          RadiusIncrease: $scope.MagicSchoolToAdd.MagicSchool.RadiusIncrease,
-                          RangeIncrease: $scope.MagicSchoolToAdd.MagicSchool.RangeIncrease,
-                          Description:$scope.MagicSchoolToAdd.MagicSchool.Description,
-                          Spells: $scope.MagicSchoolToAdd.MagicSchool.Spells,
-                          Proficiency: $scope.MagicSchoolToAdd.MagicSchool.Proficiency
-                      }
-                    };
+           var NewMagicSchool=angular.copy($scope.MagicSchoolToAdd);
             return NewMagicSchool;
             
             };
@@ -1067,18 +1071,16 @@ angular.forEach($scope.Stats,function(value,key) {
         $scope.openSpellModal = function (passedSchool){
             $scope.SpellModalVis=true;
             $scope.SetSpellSchool(passedSchool);
-            console.log(passedSchool);
+            
         }
         $scope.SetSpellSchool = function (passedSchool) {
             $scope.SpellToAdd.School = passedSchool;
-            console.log($scope.SpellToAdd.School);
+            
         };
         $scope.AddSpell=function (){
-            console.log('spellAdd');
-                console.log($scope.MakeNewSpell());
-               $scope.SpellToAdd.School.Spells.push($scope.MakeNewSpell());
+            $scope.SpellToAdd.School.Spells.push($scope.MakeNewSpell());
 
-                $scope.SpellModalVis=false
+            $scope.SpellModalVis=false
                 
         };
         $scope.RemoveSpell = function(Spell,School) { 
@@ -1196,9 +1198,10 @@ angular.forEach($scope.Stats,function(value,key) {
                         MagicSchool: {
                           MagicSchoolName: '',
                           Power: 1,
+                          PowerBonus: 0,
                           Range: 4,
                           AoERadius: 1,
-                          CostReduction: 0,
+                          DifficultyReduction: 0,
                           SpellPenetration: 0,
                           SingleTargetDmgIncrease: 0,
                           MultipleTargetDmgIncrease: 0,
@@ -1278,9 +1281,12 @@ angular.forEach($scope.Stats,function(value,key) {
                         SpellName: '',
                         Impediment: 0,
                         Penetration: 0,
-                        BaseCost: 0,
-                        AnimaCost: 0,
-                        DamagePower: 0,
+                        // BaseCost: 0,
+                        // AnimaCost: 0,
+                        BaseSpellDifficulty:0,
+                        SpellDifficulty:0,
+                        DamagePower: 1,
+                        BaseDamageMultiplier: 0,
                         DamageMultiplier: 0,
                         Description: ''
                         }
@@ -1293,10 +1299,8 @@ angular.forEach($scope.Stats,function(value,key) {
                           AoERadius: 1,
                           CostReduction: 0,
                           SpellPenetration: 0,
-                          SingleTargetDmgIncrease: 0,
-                          MultipleTargetDmgIncrease: 0,
-                          SingleTargetHealingIncrease: 0,
-                          MultipleTargetHealingIncrease: 0,
+                          DamageIncrease: 0,
+                          HealingIncrease: 0,
                           RadiusIncrease: 0,
                           RangeIncrease: 0,
                           Description:'',
@@ -1309,11 +1313,63 @@ angular.forEach($scope.Stats,function(value,key) {
                     };
 
             //Spell methods
-            $scope.CountBaseSpellCost = function(Spell){
-                Spell.BaseCost=Spell.Type.BaseCost+Spell.TargetType.BaseCost;
+            // $scope.CountBaseSpellCost = function(Spell){
+            //     Spell.BaseCost=Spell.Type.BaseCost+Spell.TargetType.BaseCost;
+            // };
+            $scope.SetSpell=function(Spell){
+                 $scope.CountBaseSpellDifficulty(Spell.Spell);
+                 $scope.SetSpellPower(Spell.Spell);
+                 // $scope.SetSpellDamageMultiplier(Spell);
             };
+            $scope.SetSpellPower = function(Spell){
+                Spell.DamagePower = Spell.Type.DamagePower;
+            };
+
+
+            $scope.ComputeSpellDamage = function (Spell,MagicSchool){
+                Spell.DamageMultiplier = Math.pow(MagicSchool.Power + Spell.BaseDamageMultiplier + MagicSchool.DamageIncrease,Spell.DamagePower);
+                
+            };
+            $scope.ComputeSpellHealing = function (Spell,MagicSchool){
+                Spell.DamageMultiplier = Math.pow(MagicSchool.Power + Spell.BaseDamageMultiplier + MagicSchool.HealingIncrease,Spell.DamagePower);
+            };
+
+
+            $scope.CountBaseSpellDifficulty = function(Spell){
+                Spell.BaseSpellDifficulty=Spell.Type.BaseSpellDifficulty+Spell.TargetType.BaseSpellDifficulty;
+
+            };
+
+            $scope.SetSpellDamageMultiplier = function(Spell){
+                Spell.Spell.BaseDamageMultiplier=Math.pow(Spell.School.Power+Spell.School.DamageIncrease,Spell.Spell.DamagePower);                
+            };
+
             $scope.CountSpellAnimaCost = function(Spell,MagicSchool){
                 Spell.AnimaCost=Spell.BaseCost+MagicSchool.Power-MagicSchool.CostReduction;
+            };
+
+
+            $scope.CountSpellDifficulty = function(Spell,MagicSchool){
+                Spell.SpellDifficulty=Spell.BaseSpellDifficulty+MagicSchool.Proficiency.ProficiencyLevel-MagicSchool.DifficultyReduction;        
+                   
+                if(Spell.SpellDifficulty<0){
+                    Spell.SpellDifficulty=0;
+                };
+            };
+            $scope.ComputeSpellMultiplier = function (Spell,MagicSchool){
+                if($scope.DamageTypes.indexOf(Spell.Type.SpellTypeName)!==-1){
+                    $scope.ComputeSpellDamage(Spell,MagicSchool);
+
+                }else{
+                    if($scope.HealingTypes.indexOf(Spell.Type.SpellTypeName)!==-1)
+                        $scope.ComputeSpellHealing(Spell,MagicSchool);
+                };
+            };
+            $scope.DamageTypes=["Missle","Killer Whale Missle","Area of Effect Damage","Offensive Spell"];
+            $scope.HealingTypes=["Healing Spell","Area of Effect Heal"];
+
+            $scope.ComputeSchoolPower = function(MagicSchool){
+                MagicSchool.Power = MagicSchool.Proficiency.ProficiencyLevel + MagicSchool.PowerBonus;
             };
             $scope.CountSpellCostWithinSchool = function(MagicSchool){
                  angular.forEach(MagicSchool.Spells,function(value,key){
@@ -1325,6 +1381,45 @@ angular.forEach($scope.Stats,function(value,key) {
                     $scope.CountSpellCostWithinSchool(value.MagicSchool);
                 });
             };
+            $scope.ComputeRange = function (MagicSchool){
+                MagicSchool.Range = Math.pow((MagicSchool.Power+MagicSchool.RangeIncrease),3);
+            };
+            $scope.ComputeAoERadius = function (MagicSchool){
+                MagicSchool.AoERadius = Math.pow((MagicSchool.Power+MagicSchool.RadiusIncrease),2);
+            };
+            $scope.ProficiencyLevelChange = function(MagicSchool){
+                $scope.ComputeSchoolPower(MagicSchool);
+                $scope.ComputeRange(MagicSchool);
+                $scope.ComputeAoERadius(MagicSchool);
+                 angular.forEach(MagicSchool.Spells,function(value,key){
+                   $scope.CountSpellDifficulty(value.Spell,MagicSchool);
+                   $scope.ComputeSpellMultiplier(value.Spell,MagicSchool);
+                   
+                });
+                
+            };
+            $scope.SchoolPowerChange = function (MagicSchool){
+                $scope.ComputeSchoolPower(MagicSchool);
+                $scope.ComputeRange(MagicSchool);
+                $scope.ComputeAoERadius(MagicSchool);
+                angular.forEach(MagicSchool.Spells,function(value,key){
+                   $scope.CountSpellDifficulty(value.Spell,MagicSchool);
+                   $scope.ComputeSpellMultiplier(value.Spell,MagicSchool);
+                   
+                });
+            };
+            $scope.DifficultyReductionChange= function (MagicSchool){
+                angular.forEach(MagicSchool.Spells,function(value,key){
+                  $scope.CountSpellDifficulty(value.Spell,MagicSchool);
+                   
+                });
+            };
+            $scope.IncreaseChange = function (MagicSchool){
+                angular.forEach(MagicSchool.Spells,function(value,key){
+                 $scope.ComputeSpellMultiplier(value.Spell,MagicSchool);
+                });
+            };
+            
             
 
             angular.forEach($scope.Perks,function(value,key){

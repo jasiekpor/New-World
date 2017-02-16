@@ -100,13 +100,13 @@
               <input type="range" min="0" max={{Vitality.VitalityMaxPoints*healthMultiplier}} numericbinding ng-model="Vitality.VitalityCurrentPoints" ng-change="healthChange()"></input>
             </div> 
 
-             <div class="col-sm-1 centerlize slide-toggle" ng-show="UpperBarVis">
+<!--              <div class="col-sm-1 centerlize slide-toggle" ng-show="UpperBarVis">
                 <p>Anima</p>  
                 <canvas-graph current-value={{Magic.CurrentAnima}} max-value={{Magic.MaxAnima}} g-size="40" xy-size="81" id-index="$index"
                 inner-color="rgba(30, 30, 80, 0.5)" outer-color="rgba(31, 64, 117, 0.8)" block-color="rgba(63, 95, 163, 1)">
                 </canvas-graph>
                 <input type="range" min="0" max={{Magic.MaxAnima}} numericbinding ng-model="Magic.CurrentAnima" ng-change="AnimaChange()"></input>
-            </div>  
+            </div>   -->
 
              <div class="col-sm-1 centerlize slide-toggle" ng-show="UpperBarVis">
                 <p>Fatigue</p>  
@@ -271,7 +271,7 @@
                               <p>Succes Ammount</p>
                             </div>
                             <div class="col-sm-1">
-                              
+                              <p>Weight</p>
                             </div>
                       </div>
 
@@ -290,13 +290,16 @@
                               <input type="number" class="numeric-input" ng-model="testImpedimentTable[i.MeleeWeapon.WeaponName]" value="0"></input>
                             </div>
                             <div class="col-sm-1">
-                              <button class="stats-button" ng-click="RollDice(i.MeleeWeapon.WeaponName,i.MeleeWeapon)">Test</button>
+                              <button class="stats-button" ng-click="TestSkill(i.MeleeWeapon.WeaponName,i.MeleeWeapon)">Test</button>
                             </div>
                             <div class="col-sm-1">
                               {{testResultTable[i.MeleeWeapon.WeaponName]}}
                             </div>
                             <div class="col-sm-1">
                               {{testSuccesTable[i.MeleeWeapon.WeaponName]}}
+                            </div>
+                             <div class="col-sm-1">
+                              {{i.MeleeWeapon.Weight}}
                             </div>
                            
                           </div>
@@ -351,7 +354,7 @@
                               <input type="number" class="numeric-input" ng-model="testImpedimentTable[i.RangedWeapon.WeaponName]" value="0"></input>
                             </div>
                             <div class="col-sm-1">
-                              <button class="stats-button" ng-click="RollDice(i.RangedWeapon.WeaponName,i.RangedWeapon)">Test</button>
+                              <button class="stats-button" ng-click="TestSkill(i.RangedWeapon.WeaponName,i.RangedWeapon)">Test</button>
                             </div>
                             <div class="col-sm-1">
                               {{testResultTable[i.RangedWeapon.WeaponName]}}
@@ -366,6 +369,18 @@
                   </div>
                 </div>
                   </div>
+
+                  <ul class="nav nav-pills Test-pills centerlize">
+                      <li class="pills-border"><a href="" ng-click="Hider('Armor')"><span class="ra ra-knight-helmet ra-lg"></span> Armor <span class="ra ra-knight-helmet ra-lg"></span></a></li>
+                    </ul>
+                    <div uib-collapse="!tabShow['Armor']" class="slide-toggle">
+                      <div class="row">
+                          <div class="col-sm-12">
+                            <p> Work in progress you greedy user </p>
+                          </div>
+                      </div>
+                    </div>
+
 
 
                     <ul class="nav nav-pills Test-pills centerlize">
@@ -394,7 +409,7 @@
                                 <p>Rolling Bones</p>
                               </div>
                               <div class="col-sm-1">
-                                <p>Dice Roll</p>
+                                <span class="ra ra-perspective-dice-six ra-lg"></span>
                               </div>
                               <div class="col-sm-1">
                                 <p>Succes Ammount</p>
@@ -421,7 +436,7 @@
                                 <input type="number" class="numeric-input" ng-model="testImpedimentTable[i.Skill.SkillName]" value="0"></input>
                               </div>
                               <div class="col-sm-1">
-                                <button class="stats-button" ng-click="RollDice(i.Skill.SkillName,i.Skill)">Roll</button>
+                                <button class="stats-button" ng-click="TestSkill(i.Skill.SkillName,i.Skill)">Roll</button>
                               </div>
                               <div class="col-sm-1">
                                 {{testResultTable[i.Skill.SkillName]}}
@@ -521,9 +536,10 @@
                           <p>Experience used: {{TotalUsedExperience}}</p>
                           <p>Experience to spend: {{toSpendCharacterExperience}}</p>
                           <button type="button" class="stats-button pull-right" ng-click="MagicSchoolModalVis=true">Add New Magic School</button>
+
                         </div>
                       </div>
-                      <div class="row">
+<!--                       <div class="row">
                         <div class="col-sm-2 centerlize">
                           <p>Anima</p>
                           <canvas-graph current-value={{Magic.MaxAnima}} max-value={{Magic.MaxAnima}} g-size="40" xy-size="81" id-index="$index"
@@ -534,7 +550,7 @@
                           <p>Can Buy: {{statMaxValue['MaxAnima']}}</p>
                           <p>Anima Regeneration: {{Magic.AnimaRegeneration}}</p>                        
                         </div>
-                      </div>
+                      </div> -->
                     </div>
 
                   <div ng-repeat="i in Magic.MagicSchools">
@@ -543,37 +559,67 @@
                       <li><a href="" ng-click="Hider(i.MagicSchool.MagicSchoolName)">{{i.MagicSchool.MagicSchoolName}} School</a></li>
                     </ul>
                     <div  uib-collapse="!tabShow[i.MagicSchool.MagicSchoolName]" class="slide-toggle">
-
                       <div class="row">
-
-                        <div class="col-sm-2">
-                          <p>Spell Power: {{i.MagicSchool.Power}}</p>
+                        <div class="col-sm-12">
+                          <label for="ProficiencyLevel">Proficiency</label>
+                          <input type="number" id="ProficiencyLevel" ng-model="i.MagicSchool.Proficiency.ProficiencyLevel" ng-change="ProficiencyLevelChange(i.MagicSchool)">
                         </div>
-
-                        <div class="col-sm-2">
-                          <p>{{i.MagicSchool.MagicSchoolName}} Proficiency: {{i.MagicSchool.Proficiency.ProficiencyLevel}}</p>
-                        </div>
-
-                        <div class="col-sm-2">
-                          <p>Anima Cost reduction: {{i.MagicSchool.CostReduction}}</p>
-                        </div>
-
-                        <div class="col-sm-2">
-                          <p>Spell Range: {{i.MagicSchool.Range}}</p>
-                        </div>
-
-                         <div class="col-sm-2">
-                          <p>Spell Penetration: {{i.MagicSchool.SpellPenetration}}</p>
-                        </div>
-                        <div class="col-sm-2">
-                          <button class="stats-button pull-right" ng-click="RemoveMagicSchool(i)">Remove &times;</button>
-                          
-                        </div>
-                       
-
                       </div>
 
                       <div class="row">
+                        <div class="col-sm-12">
+                          <table class="table">
+                            <thead>
+                              <tr>
+                                <th>Power</th>
+                                <th>Power Bonus</th>
+                                <th>Range</th>
+                                <th>Range Increase</th>
+                                <th>AoE Radius</th>
+                                <th>Radius Increase</th>
+                                <th>Difficulty Reduction</th>
+                                <th>Spell Penetration</th>
+                                <th>Damage Increase</th>
+                                <th>Healing Increase</th>
+                                <th>Remove School</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{i.MagicSchool.Power }}</td>
+                                <td>{{i.MagicSchool.PowerBonus }}</td>
+                                <td>{{i.MagicSchool.Range }}</td>
+                                <td>{{i.MagicSchool.RangeIncrease }}</td>
+                                <td>{{i.MagicSchool.AoERadius }}</td>
+                                <td>{{i.MagicSchool.RadiusIncrease }}</td>
+                                <td>{{i.MagicSchool.DifficultyReduction }}</td>
+                                <td>{{i.MagicSchool.SpellPenetration }}</td>
+                                <td>{{i.MagicSchool.DamageIncrease }}</td>
+                                <td>{{i.MagicSchool.HealingIncrease }}</td>
+                                <td> <button class="stats-button pull-right" ng-click="RemoveMagicSchool(i)">&times;</button></td>
+                              </tr>
+                              <tr>
+                                <td></td>
+                                <td><input type="number" ng-model="i.MagicSchool.PowerBonus" ng-change="SchoolPowerChange(i.MagicSchool)"></input></td>
+                                <td></td>
+                                <td><input type="number" min="0" ng-model="i.MagicSchool.RangeIncrease" ng-change="ComputeRange(i.MagicSchool)"></input></td>                                
+                                <td></td>
+                                <td><input type="number" ng-model="i.MagicSchool.RadiusIncrease" ng-change="ComputeAoERadius(i.MagicSchool)"></input></td>
+                                <td><input type="number" ng-model="i.MagicSchool.DifficultyReduction" ng-change="DifficultyReductionChange(i.MagicSchool)"></input></td>
+                                <td><input type="number" ng-model="i.MagicSchool.SpellPenetration"></input></td>
+                                <td><input type="number" ng-model="i.MagicSchool.DamageIncrease" ng-change="IncreaseChange(i.MagicSchool)"></input></td>
+                                <td><input type="number" ng-model="i.MagicSchool.HealingIncrease"ng-change="IncreaseChange(i.MagicSchool)"></input></td>
+                                <td></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          
+                        </div>
+                      </div>
+                      
+
+                      <div class="row">                           
+                          
                         <div class="col-sm-12">
                          <button class="stats-button pull-right" ng-click="openSpellModal(i.MagicSchool)">Add Spell</button>
                         </div>
@@ -581,74 +627,96 @@
                       </div>
 
                       <div class="row">
-                        <div class="col-sm-1">
-                          <p>Spell Name</p>
-                        </div>
+                        <div class="col-sm-12">
+                          <table class="table">
+                            <thead>
+                              <tr>
+                                <th>
+                                  Spell Name
+                                </th>
 
-                        <div class="col-sm-2 centerlize">
-                          <p>Spell Type</p>
-                        </div>
+                                <th >
+                                  Spell Type
+                                </th>
+                                <th >
+                                  Description
+                                </th>
 
-                        <div class="col-sm-1 centerlize">
-                          <p>Anima Cost</p>
-                        </div>
+                                <th >
+                                  Spell Difficulty
+                                </th>
+                                <th >
+                                  Impediment|Facilitations
+                                </th>
+                                 <th >
+                                  Tested Skill
+                                </th>
+                                 <th >
+                                  Damage Multiplier
+                                </th>
+                                <th >
+                                  Test
+                                </th>
+                                 <th>
+                                  Roll result
+                                </th>
+                                 <th>
+                                  Succeses
+                                </th>
+                                 <th>
+                                  Damage
+                                </th>
+                                <th>
+                                  Remove
+                                </th>
+                              </tr>
 
-                        <div class="col-sm-2 centerlize">
-                          <p>Description</p>
-                        </div>
-                        <div class="col-sm-2 centerlize">
-                          <p>Impediment|Facilitations</p>
-                        </div>
-                        <div class="col-sm-1 centerlize">
-                          <p>Test</p>
-                        </div>
-                         <div class="col-sm-1 centerlize">
-                          <p>Tested Skill</p>
-                        </div>
-                         <div class="col-sm-1 centerlize">
-                          <p>Roll result</p>
-                        </div>
-                         <div class="col-sm-1 centerlize">
-                          <p>Succeses</p>
-                        </div>
+                            </thead>
 
 
+                            <tbody>
+                              <tr ng-repeat="k in i.MagicSchool.Spells" ng-init="testImpedimentTable[k.Spell.SpellName]=0">
+                                <td>
+                                  {{k.Spell.SpellName}}
+                                </td>
 
-                      </div>
-                      <div class="row" ng-repeat="k in i.MagicSchool.Spells" ng-init="testImpedimentTable[k.Spell.SpellName]=0">
-                        <div class="col-sm-1">
-                          <p>{{k.Spell.SpellName}}</p>
-                        </div>
+                                <td>
+                                  {{k.Spell.Type.SpellTypeName}} | {{k.Spell.TargetType.SpellTargetTypeName}}
+                                </td>
 
-                        <div class="col-sm-2 centerlize">
-                          {{k.Spell.Type.SpellTypeName}} | {{k.Spell.TargetType.SpellTargetTypeName}}
-                        </div>
-
-                        <div class="col-sm-1 centerlize">
-                          {{k.Spell.AnimaCost}}
-                        </div>
-
-                        <div class="col-sm-2 centerlize">
-                          {{k.Spell.Description}}
-                        </div>
-
-                        <div class="col-sm-2 centerlize">
-                          <input type="number" class="numeric-input" ng-model="testImpedimentTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]" ng-init="testImpedimentTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]=0"></input>
-                        </div>
-                        <div class="col-sm-1 centerlize">
-                          <button class="stats-button" ng-click="CastSpell(k.Spell.SpellName,SkillTable[Magic.AssociatedSkill],k.Spell.AnimaCost,$index,i.MagicSchool.MagicSchoolName)">Roll</button>
-                        </div>
-                        <div class="col-sm-1 centerlize">
-                         {{SkillTable[Magic.AssociatedSkill].TestValue}}
-                        </div>
-                        <div class="col-sm-1 centerlize">
-                          {{testResultTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]}}
-                        </div>
-                        <div class="col-sm-1 centerlize">
-                          {{testSuccesTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]}}
-                        </div>
-                        <div class="col-sm-1 centerlize">
-                          <button class="stats-button" ng-click="RemoveSpell(k,i.MagicSchool)">Remove &times;</button>
+                                <td >
+                                  {{k.Spell.Description}}
+                                </td>
+                                <td >
+                                  {{k.Spell.SpellDifficulty}}
+                                </td>
+                                <td >
+                                  <input type="number" class="numeric-input" ng-model="testImpedimentTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]" ng-init="testImpedimentTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]=0"></input>
+                                </td>
+                                <td >
+                                 {{SkillTable[Magic.AssociatedSkill].TestValue}}
+                                </td>
+                                <td >
+                                 {{k.Spell.DamageMultiplier}}
+                                </td>
+                                <td >
+                                  <button class="stats-button" ng-click="CastSpell(k.Spell.SpellName,SkillTable[Magic.AssociatedSkill],k.Spell,$index,i.MagicSchool.MagicSchoolName)">Roll</button>
+                                </td>
+                                <td >
+                                  {{testResultTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]}}
+                                </td>
+                                <td >
+                                  {{testSuccesTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]}}
+                                </td>
+                                <td >
+                                  {{DamageTable[k.Spell.SpellName+$index+i.MagicSchool.MagicSchoolName]}}
+                                </td>
+                                <td>
+                                  <button class="stats-button" ng-click="RemoveSpell(k,i.MagicSchool)">&times;</button>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
                         </div>
                       </div>
                     </div>
@@ -849,7 +917,7 @@
                               <label for="SkillNameInput" class="pull-right">Target Type</label>
                             </div>
                             <div class="col-sm-6 pull-left">
-                              <select ng-options="i as i.SpellTargetTypeName for i in SpellToAdd.Spell.Type.RequiredTargetType" ng-model="SpellToAdd.Spell.TargetType" class="select-style" ng-change="CountBaseSpellCost(SpellToAdd.Spell)" required>
+                              <select ng-options="i as i.SpellTargetTypeName for i in SpellToAdd.Spell.Type.RequiredTargetType" ng-model="SpellToAdd.Spell.TargetType" class="select-style" ng-change="SetSpell(SpellToAdd)" required>
                                 <option value="">Select Target Type</option>
                               </select>
                             </div>
@@ -866,10 +934,10 @@
                           </div>
                           <div class="row">
                             <div class="col-sm-6">
-                              <label for="SkillNameInput" class="pull-right">Base Cost</label>
+                              <label for="SkillNameInput" class="pull-right">Spell Difficulty</label>
                             </div>
                             <div class="col-sm-6 pull-left">
-                              <input type="number" id="SkillNameInput" ng-model="SpellToAdd.Spell.BaseCost" class="pull-left"></input>
+                              <input type="number" id="SkillNameInput" ng-model="SpellToAdd.Spell.BaseSpellDifficulty" class="pull-left"></input>
 
                             </div>
                           </div>
@@ -878,17 +946,17 @@
                               <label for="SkillNameInput" class="pull-right">Damage Power</label>
                             </div>
                             <div class="col-sm-6 pull-left">
-                              <input type="number" id="SkillNameInput" ng-model="SpellToAdd.Spell.DamagePower" class="pull-left"></input>
+                              <input type="number" id="SkillNameInput" ng-model="SpellToAdd.Spell.DamagePower" class="pull-left" ng-change="SetSpellDamageMultiplier(SpellToAdd)"></input>
 
                             </div>
                           </div>
 
                           <div class="row">
                             <div class="col-sm-6">
-                              <label for="SkillNameInput" class="pull-right">Damage Multiplier</label>
+                              <label for="SkillNameInput" class="pull-right">Bonus to Damage Multiplier</label>
                             </div>
                             <div class="col-sm-6 pull-left">
-                              <input type="number" id="SkillNameInput" ng-model="SpellToAdd.Spell.DamageMultiplier" class="pull-left"></input>
+                              <input type="number" id="SkillNameInput" ng-model="SpellToAdd.Spell.BaseDamageMultiplier" class="pull-left"></input>
 
                             </div>
                           </div>
